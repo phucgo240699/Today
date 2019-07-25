@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Item{
-    var title=String()
-    var done=true
+class Item:Codable{
+    var title:String=""
+    var done=false
 }
