@@ -7,15 +7,22 @@
 //
 
 import UIKit
+import CoreData
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: UITableViewController  {
+    var selectedCategory:Category?{
+        didSet{
+            loadItems()
+        }
+    }
     var itemArray=[Item]()
     let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Items.plist")
-    
+    var context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        loadItems()
+        navigationItem.title? = selectedCategory!.name ?? ""
+        
     }
     
     // MARK: Table View Datasource methods
@@ -28,9 +35,9 @@ class TodoListViewController: UITableViewController {
         
         cell.textLabel?.text = itemArray[indexPath.row].title
         
-        let item=itemArray[indexPath.row]
-        
-        cell.accessoryType = item.done == true ? .checkmark : .none
+        //        let item=itemArray[indexPath.row]
+        //
+        //        cell.accessoryType = item.done == true ? .checkmark : .none
         
         return cell
     }
@@ -38,7 +45,9 @@ class TodoListViewController: UITableViewController {
     // MARK: Table View Delegate methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        itemArray[indexPath.row].done = !itemArray[indexPath.row].done
+        context.delete(itemArray[indexPath.row])
+        itemArray.remove(at: indexPath.row)
+        //itemArray[indexPath.row].done = !itemArray[indexPath.row].done
         
         saveItems()
         
@@ -50,8 +59,10 @@ class TodoListViewController: UITableViewController {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add New Item", message: "Do you want to add it?", preferredStyle: .alert)
         let action=UIAlertAction(title: "Add", style: .default) { (action) in
-            let newItem=Item()
+            let newItem=Item(context: self.context)
             newItem.title=textField.text ?? ""
+            newItem.done=false
+            newItem.parentCategory=self.selectedCategory
             self.itemArray.append(newItem)
             self.saveItems()
         }
@@ -67,22 +78,27 @@ class TodoListViewController: UITableViewController {
     }
     
     func saveItems(){
-        let encoder = PropertyListEncoder()
+        
         do{
-            let data = try encoder.encode(itemArray)
-            try data.write(to: dataFilePath!)
+            try context.save()
         } catch{ }
         self.tableView.reloadData()
     }
     
-    func loadItems(){
-        if let data = try? Data(contentsOf: dataFilePath!){
-            let decode = PropertyListDecoder()
-            do{
-            itemArray = try decode.decode([Item].self, from: data)
-            }
-            catch{ }
+    func loadItems(with request:NSFetchRequest<Item> = Item.fetchRequest(), predicate:NSPredicate? = nil){
+        let categoryPredicate=NSPredicate(format: "parentCategory.name MATCHES %@", selectedCategory!.name!)
+        if let additionalPredicate = predicate{
+            request.predicate=NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate,additionalPredicate])
+        }
+        else{
+            request.predicate=categoryPredicate
+        }
+        
+        do{
+            itemArray = try context.fetch(request)
+        }
+        catch {
+            print("Error fetching request: \(error)")
         }
     }
 }
-
