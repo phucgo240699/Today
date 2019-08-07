@@ -12,7 +12,7 @@
         <!--Category-->
         <scene sceneID="z74-wM-1ng">
             <objects>
-                <tableViewController id="x0w-7D-Sbi" sceneMemberID="viewController">
+                <tableViewController id="x0w-7D-Sbi" customClass="CategoryViewController" customModule="Today" customModuleProvider="target" sceneMemberID="viewController">
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="jv6-ng-ta7">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -40,7 +40,13 @@
                             <outlet property="delegate" destination="x0w-7D-Sbi" id="f7b-tc-p49"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Category" id="y2x-Fe-noF"/>
+                    <navigationItem key="navigationItem" title="Category" id="y2x-Fe-noF">
+                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="4nx-MJ-aGy">
+                            <connections>
+                                <action selector="addButtonPressed:" destination="x0w-7D-Sbi" id="KxW-q5-hcd"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <segue destination="ztG-xO-N67" kind="show" identifier="goToItems" id="NDi-z4-PKo"/>
                     </connections>

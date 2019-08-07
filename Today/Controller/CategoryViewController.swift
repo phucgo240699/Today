@@ -15,14 +15,11 @@ class CategoryViewController: UITableViewController {
     var categoryArray : Results<Category>?
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        //print(Realm.Configuration.defaultConfiguration.fileURL!)
+        super.viewDidLoad() //print(Realm.Configuration.defaultConfiguration.fileURL!)
         loadCategorys()
     }
     
     // MARK: - Table view data source
-    
-    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryArray?.count ?? 1
     }
@@ -62,8 +59,8 @@ class CategoryViewController: UITableViewController {
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
+
     }
-    
     func saveCategorys(category: Category){
         do{
             try realm.write {
