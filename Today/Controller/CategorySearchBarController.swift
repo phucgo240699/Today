@@ -8,21 +8,11 @@
 
 import Foundation
 import UIKit
-import CoreData
 extension CategoryViewController:UISearchBarDelegate{
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let result:NSFetchRequest<Category> = Category.fetchRequest()
-        result.predicate = NSPredicate(format: "name CONTAINS[cd] %@", searchBar.text!)
-        print(searchBar.text!)
-        result.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-        do{
-            categoryArray = try context.fetch(result)
-        }
-        catch {
-            print("error")
-        }
-        
+        categoryArray=realm.objects(Category.self)
+        categoryArray=categoryArray?.filter("name CONTAINS[cd] %@", searchBar.text!)
         tableView.reloadData()
     }
     
@@ -32,6 +22,5 @@ extension CategoryViewController:UISearchBarDelegate{
             DispatchQueue.main.async { searchBar.resignFirstResponder()
             }
         }
-        
     }
 }

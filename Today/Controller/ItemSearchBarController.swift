@@ -8,16 +8,10 @@
 
 import Foundation
 import UIKit
-import CoreData
 extension TodoListViewController : UISearchBarDelegate, UIPickerViewDelegate, UIImagePickerControllerDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        //print("searchBarSearchButtonClicked")
-        let result:NSFetchRequest<Item> = Item.fetchRequest()
-        let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchBar.text!)
-        
-        result.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        loadItems(with: result, predicate: predicate)
-        
+        itemArray=realm.objects(Item.self)
+        itemArray = itemArray?.filter("title CONTAINS[cd] %@", searchBar.text ?? "").sorted(byKeyPath: "dateCreated", ascending: true)
         tableView.reloadData()
         
     }
@@ -30,9 +24,5 @@ extension TodoListViewController : UISearchBarDelegate, UIPickerViewDelegate, UI
             }
         }
     }
-    
-    //    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-    //
-    //    }
     
 }
