@@ -6,4 +6,5 @@ target 'Today' do
 
   # Pods for Today
 pod 'RealmSwift'
+pod 'SwipeCellKit'
 end

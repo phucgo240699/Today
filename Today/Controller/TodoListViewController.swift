@@ -8,7 +8,7 @@
 
 import UIKit
 import RealmSwift
-class TodoListViewController: UITableViewController  {
+class TodoListViewController: SwipeTableViewController  {
     var realm=try! Realm()
     
     var selectedCategory:Category?{
@@ -21,6 +21,7 @@ class TodoListViewController: UITableViewController  {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         navigationItem.title? = selectedCategory!.name
+        tableView.rowHeight = 70.0
         loadItems()
         
     }
@@ -31,7 +32,7 @@ class TodoListViewController: UITableViewController  {
     }
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        let cell=tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
+        let cell=super.tableView(tableView, cellForRowAt: indexPath)
         if let items = itemArray?[indexPath.row]{
             cell.textLabel?.text = items.title
             cell.accessoryType = items.done == true ? .checkmark : .none
@@ -71,7 +72,9 @@ class TodoListViewController: UITableViewController  {
                         let newItem=Item()
                         newItem.title=textField.text ?? ""
                         newItem.dateCreated=Date()
+                        if newItem.title.isEmpty == false{
                         currentCategory.items.append(newItem)
+                        }
                     }
                 } catch{ }
             }
@@ -102,5 +105,16 @@ class TodoListViewController: UITableViewController  {
     func loadItems(){
         itemArray=selectedCategory?.items.sorted(byKeyPath: "title", ascending: true)
         tableView.reloadData()
+    }
+    
+    override func updateModel(at index: IndexPath) {
+        if let itemForDeletion = itemArray?[index.row]{
+            do{
+                try self.realm.write {
+                    self.realm.delete (itemForDeletion)
+                }
+            } catch { }
+            
+        }
     }
 }

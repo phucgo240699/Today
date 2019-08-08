@@ -8,30 +8,31 @@
 
 import UIKit
 import RealmSwift
-class CategoryViewController: UITableViewController {
+import SwipeCellKit
+class CategoryViewController: SwipeTableViewController {
     
     var realm=try! Realm()
     
     var categoryArray : Results<Category>?
     
     override func viewDidLoad() {
-        super.viewDidLoad() //print(Realm.Configuration.defaultConfiguration.fileURL!)
+        super.viewDidLoad()
+        tableView.rowHeight = 70.0
         loadCategorys()
     }
     
-    // MARK: - Table view data source
+    // MARK: - Table view datasource method
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return categoryArray?.count ?? 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "CategoryCell", for: indexPath)
-        
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text=categoryArray?[indexPath.row].name ?? "No categories added yet"
-        
-        
         return cell
     }
+    
+    // MARK: - Table view delegate method
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "goToItems", sender: self)
     }
@@ -48,7 +49,9 @@ class CategoryViewController: UITableViewController {
         let action=UIAlertAction(title: "Add", style: .default) { (action) in
             let newCategory=Category()
             newCategory.name=textField.text ?? ""
-            self.saveCategorys(category: newCategory)
+            if newCategory.name.isEmpty == false{
+                self.saveCategorys(category: newCategory)
+            }
         }
         
         alert.addTextField { (alertTextField) in
@@ -76,4 +79,13 @@ class CategoryViewController: UITableViewController {
         tableView.reloadData()
     }
     
+    override func updateModel(at index: IndexPath) {
+        if let categoryForDeletion = self.categoryArray?[index.row]{
+            do{
+                try self.realm.write {
+                    self.realm.delete (categoryForDeletion)
+                }
+            } catch { }
+        }
+    }
 }
