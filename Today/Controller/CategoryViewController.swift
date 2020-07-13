@@ -31,6 +31,7 @@ class CategoryViewController: SwipeTableViewController {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
         cell.textLabel?.text=categoryArray?[indexPath.row].name ?? "No categories added yet"
         cell.backgroundColor=UIColor(hexString: (categoryArray?[indexPath.row].color) ?? "FFFFFF")
+        cell.layer.cornerRadius = cell.frame.height / 6
         return cell
     }
     
@@ -50,7 +51,7 @@ class CategoryViewController: SwipeTableViewController {
         
         let alert = UIAlertController(title: "Add New Category", message: "Do you want to add it?", preferredStyle: .alert)
         
-        let action=UIAlertAction(title: "Add", style: .default) { (action) in
+        let addAction=UIAlertAction(title: "Add", style: .default) { (action) in
             
             let newCategory=Category()
             newCategory.name=textField.text ?? ""
@@ -62,12 +63,17 @@ class CategoryViewController: SwipeTableViewController {
             
         }
         
+        let cancelAction=UIAlertAction(title: "Cancel", style: .default) { (action) in
+            
+        }
+        
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Typing name of new Category"
             textField=alertTextField
         }
         
-        alert.addAction(action)
+        alert.addAction(addAction)
+        alert.addAction(cancelAction)
         
         present(alert, animated: true, completion: nil)
 

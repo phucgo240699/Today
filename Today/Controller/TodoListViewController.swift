@@ -39,7 +39,7 @@ class TodoListViewController: SwipeTableViewController  {
         } else{
             cell.textLabel?.text = "No items added yet"
         }
-        
+        cell.layer.cornerRadius = cell.frame.height / 12
         return cell
     }
     
@@ -57,14 +57,13 @@ class TodoListViewController: SwipeTableViewController  {
         tableView.reloadData()
         
         tableView.deselectRow(at: indexPath, animated: true)
-        
     }
     
     // MARK: Button Add New Item
     @IBAction func addButtonPressed(_ sender: UIBarButtonItem) {
         var textField = UITextField()
         let alert = UIAlertController(title: "Add New Item", message: "Do you want to add it?", preferredStyle: .alert)
-        let action=UIAlertAction(title: "Add", style: .default) { (action) in
+        let addAction=UIAlertAction(title: "Add", style: .default) { (action) in
             
             if let currentCategory = self.selectedCategory{
                 do{
@@ -82,13 +81,17 @@ class TodoListViewController: SwipeTableViewController  {
             
         }
         
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { (action) in
+            
+        }
+        
         alert.addTextField { (alertTextField) in
             alertTextField.placeholder = "Typing name of new item"
             textField=alertTextField
         }
         
-        alert.addAction(action)
-        
+        alert.addAction(addAction)
+        alert.addAction(cancelAction)
         present(alert, animated: true, completion: nil)
     }
     
